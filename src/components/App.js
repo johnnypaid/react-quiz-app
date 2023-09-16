@@ -12,6 +12,8 @@ import FinishScreen from "./FinishScreen";
 import Timer from "./Timer";
 import Footer from "./Footer";
 
+const SEC_PER_QUESTION = 30;
+
 const initialState = {
   questions: [],
 
@@ -20,7 +22,7 @@ const initialState = {
   index: 0,
   answer: null,
   score: 0,
-  secondsRemaining: 10,
+  secondsRemaining: null,
 };
 
 function reducer(state, action) {
@@ -34,7 +36,11 @@ function reducer(state, action) {
     case "ready":
       return "ready";
     case "active":
-      return { ...state, status: "active" };
+      return {
+        ...state,
+        status: "active",
+        secondsRemaining: state.questions.length * SEC_PER_QUESTION,
+      };
     case "newAnswer":
       const question = state.questions.at(state.index);
       return {
