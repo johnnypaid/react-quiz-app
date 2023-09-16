@@ -50,6 +50,8 @@ function reducer(state, action) {
       };
     case "finished":
       return { ...state, status: "finished" };
+    case "reset":
+      return { ...initialState, questions: state.questions, status: "ready" };
     default:
       throw new Error("Unknown action");
   }
@@ -120,7 +122,7 @@ function App() {
         )}
 
         {status === "finished" && (
-          <FinishScreen score={score} maxScore={maxScore} />
+          <FinishScreen score={score} maxScore={maxScore} dispatch={dispatch} />
         )}
       </Main>
     </div>
