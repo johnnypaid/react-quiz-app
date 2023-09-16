@@ -6,6 +6,9 @@ import Loader from "./Loader";
 import Error from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NextButton from "./NextButton";
+import Progress from "./Progress";
+import FinishScreen from "./FinishScreen";
 
 const initialState = {
   questions: [],
@@ -39,8 +42,14 @@ function reducer(state, action) {
             ? state.score + question.points
             : state.scrore,
       };
+    case "nextQuestion":
+      return {
+        ...state,
+        index: state.index + 1,
+        answer: null,
+      };
     case "finished":
-      return "finished";
+      return { ...state, status: "finished" };
     default:
       throw new Error("Unknown action");
   }
@@ -53,6 +62,10 @@ function App() {
   );
 
   const numQuestions = questions.length;
+  const maxScore = questions.reduce(
+    (prev, current) => prev + current.points,
+    0
+  );
 
   useEffect(() => {
     async function getQuestions() {
@@ -84,11 +97,30 @@ function App() {
           <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
         )}
         {status === "active" && (
-          <Question
-            questions={questions[index]}
-            dispatch={dispatch}
-            answer={answer}
-          />
+          <>
+            <Progress
+              index={index}
+              numQuestions={numQuestions}
+              score={score}
+              maxScore={maxScore}
+              answer={answer}
+            />
+            <Question
+              questions={questions[index]}
+              dispatch={dispatch}
+              answer={answer}
+            />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              numQuestions={numQuestions}
+            />
+          </>
+        )}
+
+        {status === "finished" && (
+          <FinishScreen score={score} maxScore={maxScore} />
         )}
       </Main>
     </div>
