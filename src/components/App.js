@@ -1,5 +1,4 @@
 // import DateCounter from "./DateCounter";
-import { useEffect, useReducer } from "react";
 import Header from "./Header";
 import Main from "./Main";
 import Loader from "./Loader";
@@ -11,102 +10,20 @@ import Progress from "./Progress";
 import FinishScreen from "./FinishScreen";
 import Timer from "./Timer";
 import Footer from "./Footer";
-
-const SEC_PER_QUESTION = 30;
-
-const initialState = {
-  questions: [],
-
-  // it can be: 'loading', 'error','ready', 'active', 'finished'
-  status: "loading",
-  index: 0,
-  answer: null,
-  score: 0,
-  secondsRemaining: null,
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "dataReceived":
-      return { ...state, questions: action.payload, status: "ready" };
-    case "loading":
-      return "loading";
-    case "dataFailed":
-      return { ...state, status: "error" };
-    case "ready":
-      return "ready";
-    case "active":
-      return {
-        ...state,
-        status: "active",
-        secondsRemaining: state.questions.length * SEC_PER_QUESTION,
-      };
-    case "newAnswer":
-      const question = state.questions.at(state.index);
-      return {
-        ...state,
-        answer: action.payload,
-        score:
-          action.payload === question.correctOption
-            ? state.score + question.points
-            : state.scrore,
-      };
-    case "nextQuestion":
-      return {
-        ...state,
-        index: state.index + 1,
-        answer: null,
-      };
-    case "finished":
-      return { ...state, status: "finished" };
-    case "reset":
-      return {
-        ...initialState,
-        questions: state.questions,
-        status: "ready",
-        secondsRemaining: 10,
-      };
-    case "tick":
-      return {
-        ...state,
-        secondsRemaining: state.secondsRemaining - 1,
-        status: state.secondsRemaining === 0 ? "finished" : state.status,
-      };
-    default:
-      throw new Error("Unknown action");
-  }
-}
+import { useQuestion } from "../context/QuestionContext";
 
 function App() {
-  const [
-    { questions, status, index, answer, score, secondsRemaining },
+  const {
+    questions,
+    status,
+    index,
+    answer,
+    score,
+    secondsRemaining,
+    numQuestions,
+    maxScore,
     dispatch,
-  ] = useReducer(reducer, initialState);
-
-  const numQuestions = questions.length;
-  const maxScore = questions.reduce(
-    (prev, current) => prev + current.points,
-    0
-  );
-
-  useEffect(() => {
-    async function getQuestions() {
-      try {
-        // throw new Error("error ka boy dk");
-        const questions = await fetch("http://localhost:8000/questions");
-        const result = await questions.json();
-
-        result
-          ? dispatch({ type: "dataReceived", payload: await result })
-          : dispatch({ type: "dataFailed" });
-      } catch (error) {
-        console.log(error);
-        dispatch({ type: "dataFailed", payload: error.message });
-      }
-    }
-
-    getQuestions();
-  }, []);
+  } = useQuestion();
 
   return (
     <div className="app">
