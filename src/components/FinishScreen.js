@@ -1,6 +1,8 @@
+import { useQuestion } from "../context/QuestionContext";
 import ResetButton from "./ResetButton";
 
-export default function FinishScreen({ score, maxScore, dispatch }) {
+export default function FinishScreen() {
+  const { score, maxScore, dispatch } = useQuestion();
   const percentage = (score / maxScore) * 100;
 
   return (

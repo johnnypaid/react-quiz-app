@@ -13,17 +13,7 @@ import Footer from "./Footer";
 import { useQuestion } from "../context/QuestionContext";
 
 function App() {
-  const {
-    questions,
-    status,
-    index,
-    answer,
-    score,
-    secondsRemaining,
-    numQuestions,
-    maxScore,
-    dispatch,
-  } = useQuestion();
+  const { status } = useQuestion();
 
   return (
     <div className="app">
@@ -32,38 +22,19 @@ function App() {
       <Main>
         {status === "loading" && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && (
-          <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
-        )}
+        {status === "ready" && <StartScreen />}
         {status === "active" && (
           <>
-            <Progress
-              index={index}
-              numQuestions={numQuestions}
-              score={score}
-              maxScore={maxScore}
-              answer={answer}
-            />
-            <Question
-              questions={questions[index]}
-              dispatch={dispatch}
-              answer={answer}
-            />
+            <Progress />
+            <Question />
             <Footer>
-              <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
-              <NextButton
-                dispatch={dispatch}
-                answer={answer}
-                index={index}
-                numQuestions={numQuestions}
-              />
+              <Timer />
+              <NextButton />
             </Footer>
           </>
         )}
 
-        {status === "finished" && (
-          <FinishScreen score={score} maxScore={maxScore} dispatch={dispatch} />
-        )}
+        {status === "finished" && <FinishScreen />}
       </Main>
     </div>
   );
